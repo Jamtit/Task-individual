@@ -1,9 +1,12 @@
 package com.tasks.TasksIndividual.task.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskRepositoryInterface {
-    List<TaskDao> selectAllTasks();
-    TaskDao selectTaskById(int id);
-    void createTask(TaskDao task);
+    List<Task> selectAllTasks();
+    Optional<Task> selectTaskById(int id);
+    void createTask(Task task);
+
+    void deleteTaskById(int id);
 }

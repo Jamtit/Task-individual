@@ -1,40 +1,71 @@
 package com.tasks.TasksIndividual.task.repository;
 
+import com.tasks.TasksIndividual.task.repository.mappers.TaskMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TaskRepository implements TaskRepositoryInterface{
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     @Autowired
-    public TaskRepository(JdbcTemplate jdbcTemplate){
-        this.jdbcTemplate = jdbcTemplate;
+    public TaskRepository(NamedParameterJdbcTemplate template){
+        this.namedParameterJdbcTemplate = template;
     }
 
     @Override
-    public List<TaskDao> selectAllTasks(){
+    public List<Task> selectAllTasks(){
         String query = """
-                SELECT * FROM task;
+                    SELECT id, task_name, task_desc
+                    FROM task
                 """;
-        return jdbcTemplate.queryForList(query, TaskDao.class);
+        return namedParameterJdbcTemplate.query(query, new TaskMapper());
     }
 
     @Override
-    public TaskDao selectTaskById(int id){
+    public Optional<Task> selectTaskById(int id){
         String query = """
-                 SELECT * FROM task WHERE id=%d
-                """.formatted(id);
-        return jdbcTemplate.queryForObject(query, TaskDao.class);
+                 SELECT id, task_name, task_desc
+                 FROM task
+                 WHERE id= :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        return namedParameterJdbcTemplate.query(query, params, new TaskMapper())
+                .stream()
+                .findFirst();
+
     }
     @Override
-    public void createTask(TaskDao task){
-        String sql = """
-                    INSERT INTO task VALUES(?, ?, ?)
+    public void createTask(Task task){
+        String query = """
+                    INSERT INTO task
+                    VALUES(:id, :task_name, :task_desc)
                 """;
-        jdbcTemplate.update(sql, task.id(), task.taskName(), task.taskDesc());
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", task.id())
+                .addValue("task_name", task.taskName())
+                .addValue("task_desc", task.taskDesc());
+        namedParameterJdbcTemplate.update(query, params);
+    }
+
+    @Override
+    public void deleteTaskById(int id){
+        String query = """
+                    DELETE FROM task
+                    WHERE id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id);
+
+        namedParameterJdbcTemplate.update(query, params);
     }
 }
