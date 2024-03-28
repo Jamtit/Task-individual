@@ -68,4 +68,19 @@ public class TaskRepository implements TaskRepositoryInterface{
 
         namedParameterJdbcTemplate.update(query, params);
     }
+
+    @Override
+    public void updateTaskById(int id, Task task){
+        String query = """
+                    UPDATE task
+                    SET task_name = :task_name, task_desc = :task_desc
+                    WHERE id = :id
+                """;
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("task_desc", task.taskDesc())
+                .addValue("task_name", task.taskName());
+
+        namedParameterJdbcTemplate.update(query, params);
+    }
 }
