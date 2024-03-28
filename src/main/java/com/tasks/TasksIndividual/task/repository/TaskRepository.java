@@ -14,6 +14,7 @@ import java.util.Optional;
 public class TaskRepository implements TaskRepositoryInterface{
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     @Autowired
     public TaskRepository(NamedParameterJdbcTemplate template){
         this.namedParameterJdbcTemplate = template;
@@ -43,6 +44,7 @@ public class TaskRepository implements TaskRepositoryInterface{
                 .findFirst();
 
     }
+
     @Override
     public void createTask(Task task){
         String query = """

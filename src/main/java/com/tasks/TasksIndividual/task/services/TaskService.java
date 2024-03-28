@@ -10,7 +10,6 @@ public interface TaskService {
     List<TaskResponse> selectAllTasks();
     TaskResponse selectTaskById(int id) throws TaskNotFoundException;
     void createTask(TaskRequest taskRequest);
-
     void deleteTaskById(int id) throws  TaskNotFoundException;
     void updateTaskById(int id, TaskRequest taskRequest) throws TaskNotFoundException;
 }
