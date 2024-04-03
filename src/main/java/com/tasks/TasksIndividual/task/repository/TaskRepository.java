@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class TaskRepository implements TaskRepositoryInterface{
@@ -30,7 +31,7 @@ public class TaskRepository implements TaskRepositoryInterface{
     }
 
     @Override
-    public Optional<Task> selectTaskById(int id){
+    public Optional<Task> selectTaskById(String id){
         String query = """
                  SELECT id, task_name, task_desc
                  FROM task
@@ -42,25 +43,24 @@ public class TaskRepository implements TaskRepositoryInterface{
         return namedParameterJdbcTemplate.query(query, params, new TaskMapper())
                 .stream()
                 .findFirst();
-
     }
 
     @Override
     public void createTask(Task task){
         String query = """
                     INSERT INTO task
-                    VALUES(:id, :task_name, :task_desc)
+                    VALUES(:id, :taskName, :taskDesc)
                 """;
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", task.id())
-                .addValue("task_name", task.taskName())
-                .addValue("task_desc", task.taskDesc());
+                .addValue("taskName", task.taskName())
+                .addValue("taskDesc", task.taskDesc());
         namedParameterJdbcTemplate.update(query, params);
     }
 
     @Override
-    public void deleteTaskById(int id){
+    public void deleteTaskById(String id){
         String query = """
                     DELETE FROM task
                     WHERE id = :id
@@ -72,16 +72,16 @@ public class TaskRepository implements TaskRepositoryInterface{
     }
 
     @Override
-    public void updateTaskById(int id, Task task){
+    public void updateTaskById(String id, Task task){
         String query = """
                     UPDATE task
-                    SET task_name = :task_name, task_desc = :task_desc
+                    SET task_name = :taskName, task_desc = :taskDesc
                     WHERE id = :id
                 """;
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", id)
-                .addValue("task_desc", task.taskDesc())
-                .addValue("task_name", task.taskName());
+                .addValue("taskDesc", task.taskDesc())
+                .addValue("taskName", task.taskName());
 
         namedParameterJdbcTemplate.update(query, params);
     }

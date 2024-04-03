@@ -1,10 +1,9 @@
 package com.tasks.TasksIndividual.task.controller;
 
-import com.tasks.TasksIndividual.task.dto.request.TaskRequest;
+import com.tasks.TasksIndividual.task.dto.request.TaskPostRequest;
+import com.tasks.TasksIndividual.task.dto.request.TaskUpdateRequest;
 import com.tasks.TasksIndividual.task.dto.response.TaskResponse;
-import com.tasks.TasksIndividual.task.repository.Task;
 import com.tasks.TasksIndividual.task.services.TaskServiceImpl;
-import com.tasks.TasksIndividual.task.services.exceptions.TaskException;
 import com.tasks.TasksIndividual.task.services.exceptions.TaskNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,25 +35,25 @@ public class TaskController {
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TaskResponse getTaskById(@PathVariable int id) throws TaskNotFoundException {
+    public TaskResponse getTaskById(@PathVariable String id) throws TaskNotFoundException {
         return taskService.selectTaskById(id);
     }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void createTask(@RequestBody TaskRequest taskRequest){
-        taskService.createTask(taskRequest);
+    public void createTask(@RequestBody TaskPostRequest taskPostRequest){
+        taskService.createTask(taskPostRequest);
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTaskById(@PathVariable int id) throws TaskNotFoundException{
+    public void deleteTaskById(@PathVariable String id) throws TaskNotFoundException{
         taskService.deleteTaskById(id);
     }
 
     @PatchMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateTaskById(@PathVariable int id, @RequestBody TaskRequest taskRequest) throws TaskNotFoundException {
-        taskService.updateTaskById(id, taskRequest);
+    public void updateTaskById(@PathVariable String id, @RequestBody TaskUpdateRequest taskUpdateRequest) throws TaskNotFoundException {
+        taskService.updateTaskById(id, taskUpdateRequest);
     }
 }
