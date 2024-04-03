@@ -3,7 +3,8 @@ package com.tasks.TasksIndividual.task.services;
 import com.tasks.TasksIndividual.task.dto.request.TaskPostRequest;
 import com.tasks.TasksIndividual.task.dto.request.TaskUpdateRequest;
 import com.tasks.TasksIndividual.task.dto.response.TaskResponse;
-import com.tasks.TasksIndividual.task.repository.Task;
+import com.tasks.TasksIndividual.task.repository.TaskDAORequest;
+import com.tasks.TasksIndividual.task.repository.TaskDAOResponse;
 import com.tasks.TasksIndividual.task.repository.TaskRepository;
 import com.tasks.TasksIndividual.task.services.exceptions.TaskNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,28 +26,28 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskResponse> selectAllTasks() {
-        List<Task> tasks = taskRepository.selectAllTasks();
-        return tasks.stream().map(this::convertTaskIntoResponse).toList();
+        List<TaskDAOResponse> tasks = taskRepository.selectAllTasks();
+        return tasks.stream().map(this::convertDaoResponseIntoTaskResponse).toList();
     }
 
     @Override
     public TaskResponse selectTaskById(String id) throws TaskNotFoundException {
-        Optional<Task> task = taskRepository.selectTaskById(id);
+        Optional<TaskDAOResponse> task = taskRepository.selectTaskById(id);
         if (task.isPresent()) {
-            return convertTaskIntoResponse(task.get());
+            return convertDaoResponseIntoTaskResponse(task.get());
         }
         throw new TaskNotFoundException(id);
     }
 
     @Override
     public void createTask(TaskPostRequest taskPostRequest) {
-        Task receivedTask = convertTaskRequestIntoTask(taskPostRequest);
+        TaskDAORequest receivedTask = convertClientRequestIntoDaoRequest(taskPostRequest);
         taskRepository.createTask(receivedTask);
     }
 
     @Override
     public void deleteTaskById(String id) throws TaskNotFoundException {
-        Optional<Task> foundTask = taskRepository.selectTaskById(id);
+        Optional<TaskDAOResponse> foundTask = taskRepository.selectTaskById(id);
         if (foundTask.isPresent()) {
             taskRepository.deleteTaskById(id);
         } else {
@@ -57,8 +58,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void updateTaskById(String id, TaskUpdateRequest taskUpdateRequest) throws TaskNotFoundException {
-        Optional<Task> foundTask = taskRepository.selectTaskById(id);
-        Task receivedTask = convertTaskRequestIntoTask(taskUpdateRequest);
+        Optional<TaskDAOResponse> foundTask = taskRepository.selectTaskById(id);
+        TaskDAORequest receivedTask = convertTaskDAORequestIntoTaskDAOResponse(taskUpdateRequest);
         if (foundTask.isPresent()) {
             taskRepository.updateTaskById(id, receivedTask);
         } else {
@@ -66,19 +67,19 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private Task convertTaskRequestIntoTask( TaskPostRequest taskPostRequest) {
+    private TaskDAORequest convertClientRequestIntoDaoRequest(TaskPostRequest taskPostRequest) {
         return taskPostRequest == null
                 ? null
-                : new Task(UUID.randomUUID().toString(), taskPostRequest.taskName(), taskPostRequest.taskDesc());
+                : new TaskDAORequest(UUID.randomUUID().toString(), taskPostRequest.taskName(), taskPostRequest.taskDesc());
     }
 
-    private Task convertTaskRequestIntoTask( TaskUpdateRequest taskUpdateRequest) {
+    private TaskDAORequest convertTaskDAORequestIntoTaskDAOResponse(TaskUpdateRequest taskUpdateRequest) {
         return taskUpdateRequest == null
                 ? null
-                : new Task(taskUpdateRequest.id(), taskUpdateRequest.taskName(), taskUpdateRequest.taskDesc());
+                : new TaskDAORequest(taskUpdateRequest.id(), taskUpdateRequest.taskName(), taskUpdateRequest.taskDesc());
     }
 
-    private TaskResponse convertTaskIntoResponse(Task task) {
+    private TaskResponse convertDaoResponseIntoTaskResponse(TaskDAOResponse task) {
         return task == null
                 ? null
                 : new TaskResponse(task.taskName(), task.taskDesc());

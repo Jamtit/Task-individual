@@ -1,7 +1,7 @@
 package com.tasks.TasksIndividual.task.repository;
 
 
-public record Task(
+public record TaskDAOResponse(
         String id,
         String taskName,
         String taskDesc

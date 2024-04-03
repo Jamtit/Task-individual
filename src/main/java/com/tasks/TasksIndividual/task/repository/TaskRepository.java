@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public class TaskRepository implements TaskRepositoryInterface{
@@ -22,7 +21,7 @@ public class TaskRepository implements TaskRepositoryInterface{
     }
 
     @Override
-    public List<Task> selectAllTasks(){
+    public List<TaskDAOResponse> selectAllTasks(){
         String query = """
                     SELECT id, task_name, task_desc
                     FROM task
@@ -31,7 +30,7 @@ public class TaskRepository implements TaskRepositoryInterface{
     }
 
     @Override
-    public Optional<Task> selectTaskById(String id){
+    public Optional<TaskDAOResponse> selectTaskById(String id){
         String query = """
                  SELECT id, task_name, task_desc
                  FROM task
@@ -46,7 +45,7 @@ public class TaskRepository implements TaskRepositoryInterface{
     }
 
     @Override
-    public void createTask(Task task){
+    public void createTask(TaskDAORequest task){
         String query = """
                     INSERT INTO task
                     VALUES(:id, :taskName, :taskDesc)
@@ -72,7 +71,7 @@ public class TaskRepository implements TaskRepositoryInterface{
     }
 
     @Override
-    public void updateTaskById(String id, Task task){
+    public void updateTaskById(String id, TaskDAORequest task){
         String query = """
                     UPDATE task
                     SET task_name = :taskName, task_desc = :taskDesc
